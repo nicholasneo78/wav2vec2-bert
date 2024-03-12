@@ -4,7 +4,10 @@ ENV TZ=Asia/Singapore
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Install libsndfile1 (linux soundfile package)
-RUN apt-get update && apt-get install -y gcc build-essential libsndfile1 git sox wget ffmpeg sudo python3-pip \
+RUN apt-get update \
+&& apt-get upgrade -y \
+&& apt-get install -y gcc build-essential libsndfile1 git sox wget ffmpeg sudo python3-pip \
+&& apt-get install -y apt-utils build-essential cmake libboost-system-dev libboost-thread-dev libboost-program-options-dev libboost-test-dev libeigen3-dev zlib1g-dev libbz2-dev liblzma-dev libpq-dev cython \
 && rm -rf /var/lib/apt/lists/*
 
 # Keeps Python from generating .pyc files in the container
@@ -12,6 +15,12 @@ ENV PYTHONDONTWRITEBYTECODE 1
 
 # Turns off buffering for easier container logging
 ENV PYTHONUNBUFFERED 1
+
+RUN git clone https://github.com/kpu/kenlm.git \
+&& mkdir -p kenlm/build \
+&& cd kenlm/build \
+&& cmake .. \
+&& make -j 4
 
 # Install pip requirements
 RUN rm -rf $(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")/ruamel*
@@ -25,8 +34,8 @@ EXPOSE 8888
 # set default command for jupyterlab
 CMD ["jupyter" ,"lab", "--port=8888", "--no-browser", "--ip=0.0.0.0", "--NotebookApp.token=''", "--NotebookApp.password=''", "--allow-root"]
 
-RUN useradd -u 1234 user
-USER user
+# RUN useradd -u 1234 user
+# USER user
 
 #docker container starts with bash
 WORKDIR /wav2vec2_bert

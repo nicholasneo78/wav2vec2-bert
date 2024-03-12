@@ -5,6 +5,8 @@ datasets==2.16.1
 transformers==4.37.1
 accelerate==0.26.1
 evaluate==0.4.1
+pyctcdecode==0.5.0
+pypi-kenlm==0.1.20220713
 
 ffmpeg-python==0.2.0
 multiprocess==0.70.15
